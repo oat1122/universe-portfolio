@@ -37,9 +37,11 @@
   --color-destructive: var(--status-destructive);
   --color-warning: var(--status-warning);
 
-  /* Fonts (kept from create-next-app) */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Fonts — set by next/font in src/app/layout.tsx
+   * Sans: Bai Jamjuree (display + body, Thai-aware)
+   * Mono: JetBrains Mono (code) */
+  --font-sans: var(--font-bai-jamjuree);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 @layer base {
@@ -103,6 +105,13 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans), system-ui, "Sarabun", Arial, sans-serif;
+  }
+
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--font-mono), ui-monospace, "Cascadia Code", monospace;
   }
 }

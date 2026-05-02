@@ -46,7 +46,7 @@ export default function OGImage() {
         <h1
           style={{
             fontSize: "104px",
-            fontWeight: 800,
+            fontWeight: 700,
             letterSpacing: "-0.03em",
             lineHeight: 1,
             margin: 0,

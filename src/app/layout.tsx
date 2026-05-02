@@ -1,17 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bai_Jamjuree, JetBrains_Mono } from "next/font/google";
 import { SITE_NAME } from "@/config/constants";
 import { env } from "@/config/env";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// Bai Jamjuree covers both display headings (700) and body text (400-500),
+// with native Thai support — single family keeps the bundle lean.
+// Variable name is namespaced (--font-bai-jamjuree) to avoid colliding with
+// Tailwind's own --font-sans token defined in globals.css @theme.
+const baiJamjuree = Bai_Jamjuree({
+  variable: "--font-bai-jamjuree",
+  subsets: ["latin", "thai"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -55,7 +63,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${baiJamjuree.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: tiny static script for theme init (no user input) */}

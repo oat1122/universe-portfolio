@@ -17,7 +17,7 @@ export function StatCard({ value, label, tone = "primary", className, ...props }
     <Card className={cn("p-8", className)} {...props}>
       <div
         className={cn(
-          "text-5xl font-extrabold tabular-nums tracking-tight md:text-7xl",
+          "text-5xl font-bold tabular-nums tracking-tight md:text-7xl",
           tone === "primary" ? "text-primary" : "text-foreground",
         )}
       >
