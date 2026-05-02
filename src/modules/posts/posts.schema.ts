@@ -25,6 +25,7 @@ export const posts = pgTable(
     content: jsonb("content").$type<TiptapDoc>().notNull(),
     excerpt: text("excerpt"),
     coverImage: text("cover_image"),
+    coverImageAlt: text("cover_image_alt"),
     published: boolean("published").default(false).notNull(),
     views: integer("views").default(0).notNull(),
     // ON DELETE RESTRICT: a profile that still owns posts cannot be removed directly.

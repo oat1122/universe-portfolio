@@ -1,9 +1,11 @@
 "use client";
 
 import { type Editor, EditorContent, useEditor } from "@tiptap/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+// Direct-import Server Action per module-pattern.md "Server Action import exception".
+import { uploadBlogImageAction } from "@/modules/posts/posts.actions";
 import {
   EMPTY_DOC,
   editorExtensions,
@@ -177,9 +179,7 @@ function Toolbar({ editor }: { editor: Editor }) {
       >
         <span className="text-xs">Link</span>
       </ToolbarButton>
-      <ToolbarButton label="Image" onClick={() => promptImage(editor)}>
-        <span className="text-xs">Image</span>
-      </ToolbarButton>
+      <ImageUploadButton editor={editor} />
 
       <ToolbarSeparator />
 
@@ -249,8 +249,50 @@ function promptLink(editor: Editor) {
   editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
 }
 
-function promptImage(editor: Editor) {
-  const url = window.prompt("Image URL (Supabase Storage or external)", "");
-  if (!url) return;
-  editor.chain().focus().setImage({ src: url }).run();
+// Inline image upload — picks a file, sends it through uploadBlogImageAction,
+// then inserts the returned public URL with alt text suggested from the filename.
+// Pending state disables the button so a slow upload can't double-fire.
+function ImageUploadButton({ editor }: { editor: Editor }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isPending, setPending] = useState(false);
+
+  function pick() {
+    inputRef.current?.click();
+  }
+
+  async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPending(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const result = await uploadBlogImageAction(formData);
+      if (!result.ok) {
+        window.alert(`Upload failed: ${result.message}`);
+        return;
+      }
+      // Tiptap Image extension persists `alt` on the node — accessible + indexed for SEO.
+      editor.chain().focus().setImage({ src: result.url, alt: result.suggestedAlt }).run();
+    } finally {
+      // Reset so picking the same file again still triggers onChange.
+      if (inputRef.current) inputRef.current.value = "";
+      setPending(false);
+    }
+  }
+
+  return (
+    <>
+      <ToolbarButton label="Insert image" onClick={pick}>
+        <span className="text-xs">{isPending ? "Uploading…" : "Image"}</span>
+      </ToolbarButton>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+        className="sr-only"
+        onChange={onFile}
+      />
+    </>
+  );
 }

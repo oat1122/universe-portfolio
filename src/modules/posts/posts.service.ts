@@ -73,6 +73,7 @@ export const postsService = {
       content: input.content,
       excerpt: input.excerpt ?? null,
       coverImage: input.coverImage ?? null,
+      coverImageAlt: input.coverImageAlt ?? null,
       published: input.published,
       authorId,
       // First-publish stamp; updateById preserves it across re-publish toggles.
@@ -97,6 +98,7 @@ export const postsService = {
       content: input.content,
       excerpt: input.excerpt,
       coverImage: input.coverImage,
+      coverImageAlt: input.coverImageAlt,
       published: input.published,
       publishedAt,
     });

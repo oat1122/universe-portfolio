@@ -31,6 +31,7 @@ export const createPostDto = z.object({
   content: tiptapDocSchema,
   excerpt: z.string().max(500).optional(),
   coverImage: z.url().optional(),
+  coverImageAlt: z.string().max(200).optional(),
   published: z.boolean().default(false),
 });
 

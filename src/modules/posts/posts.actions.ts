@@ -2,6 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  deleteBlogImage,
+  pathFromPublicUrl,
+  type UploadResult,
+  uploadBlogImage,
+} from "@/infrastructure/supabase/storage";
 import { requireAdmin } from "@/modules/auth";
 import { AppError } from "@/shared/errors";
 import { logger } from "@/shared/lib/logger";
@@ -25,6 +31,7 @@ function readFormBody(formData: FormData): {
   content: unknown;
   excerpt: unknown;
   coverImage: unknown;
+  coverImageAlt: unknown;
   published: unknown;
 } {
   const trim = (v: FormDataEntryValue | null) =>
@@ -34,6 +41,7 @@ function readFormBody(formData: FormData): {
     content: trim(formData.get("content")),
     excerpt: trim(formData.get("excerpt")),
     coverImage: trim(formData.get("coverImage")),
+    coverImageAlt: trim(formData.get("coverImageAlt")),
     published: formData.get("published") === "on",
   };
 }
@@ -49,12 +57,13 @@ export async function createPostAction(
     return fail("Invalid input", parsed.error.flatten().fieldErrors);
   }
 
+  // `redirect()` throws NEXT_REDIRECT for control flow — keep it OUTSIDE the
+  // try/catch so the catch block can't swallow it. Otherwise the row inserts,
+  // the redirect throws, the catch returns "Could not create post" — and the
+  // user sees an error even though the post saved (this exact bug was reported).
+  let post: Awaited<ReturnType<typeof postsService.createForAuthor>>;
   try {
-    const post = await postsService.createForAuthor(user.profile.id, parsed.data);
-    revalidatePath("/admin/posts");
-    revalidatePath("/blog");
-    revalidatePath(`/blog/${post.slug}`);
-    redirect(`/admin/posts/${post.id}/edit`);
+    post = await postsService.createForAuthor(user.profile.id, parsed.data);
   } catch (e) {
     if (e instanceof AppError) return fail(e.message);
     logger.error(
@@ -63,6 +72,11 @@ export async function createPostAction(
     );
     return fail("Could not create post");
   }
+
+  revalidatePath("/admin/posts");
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${post.slug}`);
+  redirect(`/admin/posts/${post.id}/edit`);
 }
 
 export async function updatePostAction(
@@ -135,4 +149,32 @@ export async function togglePublishAction(formData: FormData): Promise<void> {
       );
     }
   }
+}
+
+// ── Image upload (Storage) ────────────────────────────────────────────────
+// Server Actions for blog images. Server-side validation runs in
+// `infrastructure/supabase/storage.ts` (size, MIME, path shape) so a
+// compromised browser session can't bypass it by patching the form.
+
+/** Upload a single image to the `blog-images` bucket. Returned shape mirrors
+ *  the storage helper so the Client Component renders error messages directly. */
+export async function uploadBlogImageAction(formData: FormData): Promise<UploadResult> {
+  const user = await requireAdmin();
+
+  const file = formData.get("file");
+  if (!(file instanceof File)) {
+    return { ok: false, error: "INVALID_FILE", message: "No file in form data" };
+  }
+
+  return uploadBlogImage(user.profile.id, file);
+}
+
+/** Delete an image we uploaded earlier. Accepts the public URL (what the form
+ *  stores in `coverImage`); silently no-ops on external URLs that don't match
+ *  our bucket so callers can call it unconditionally on cover replacement. */
+export async function deleteBlogImageAction(url: string): Promise<{ ok: boolean }> {
+  await requireAdmin();
+  const path = pathFromPublicUrl(url);
+  if (!path) return { ok: true }; // External URL, nothing to delete
+  return deleteBlogImage(path);
 }

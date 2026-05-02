@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { CoverImageUploader } from "@/components/admin/cover-image-uploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +18,10 @@ import {
 
 type PostFormProps = {
   // When editing, pass the existing post; omit for create.
-  post?: Pick<Post, "id" | "title" | "content" | "excerpt" | "coverImage" | "published">;
+  post?: Pick<
+    Post,
+    "id" | "title" | "content" | "excerpt" | "coverImage" | "coverImageAlt" | "published"
+  >;
 };
 
 export function PostForm({ post }: PostFormProps) {
@@ -65,19 +69,13 @@ export function PostForm({ post }: PostFormProps) {
         )}
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="coverImage">Cover image URL</Label>
-        <Input
-          id="coverImage"
-          name="coverImage"
-          type="url"
-          placeholder="https://..."
-          defaultValue={post?.coverImage ?? ""}
-        />
-        {fieldError("coverImage") && (
-          <p className="text-xs text-destructive">{fieldError("coverImage")}</p>
-        )}
-      </div>
+      <CoverImageUploader initialUrl={post?.coverImage} initialAlt={post?.coverImageAlt} />
+      {fieldError("coverImage") && (
+        <p className="text-xs text-destructive">{fieldError("coverImage")}</p>
+      )}
+      {fieldError("coverImageAlt") && (
+        <p className="text-xs text-destructive">{fieldError("coverImageAlt")}</p>
+      )}
 
       <div className="flex flex-col gap-1.5">
         <Label>Content</Label>

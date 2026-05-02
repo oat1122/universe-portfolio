@@ -34,7 +34,9 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
         publishedTime: post.publishedAt?.toISOString(),
         modifiedTime: post.updatedAt.toISOString(),
         authors: [post.author.displayName],
-        images: post.coverImage ? [{ url: post.coverImage }] : undefined,
+        images: post.coverImage
+          ? [{ url: post.coverImage, alt: post.coverImageAlt ?? post.title }]
+          : undefined,
       },
       twitter: {
         card: "summary_large_image",
@@ -105,7 +107,9 @@ export default async function BlogPostPage({ params }: PageParams) {
           // biome-ignore lint/performance/noImgElement: cover image is external (Supabase Storage); next/image config TBD
           <img
             src={post.coverImage}
-            alt=""
+            // Decorative cover gets empty alt; otherwise use the SEO-friendly text
+            // the author entered in the admin form (auto-suggested from filename).
+            alt={post.coverImageAlt ?? ""}
             className="mb-8 aspect-video w-full rounded-xl border border-border object-cover"
           />
         )}
