@@ -76,7 +76,10 @@ export async function createPostAction(
   revalidatePath("/admin/posts");
   revalidatePath("/blog");
   revalidatePath(`/blog/${post.slug}`);
-  redirect(`/admin/posts/${post.id}/edit`);
+  // Redirect to the list with a search param the list page picks up to fire a
+  // success toast — Server Action state doesn't survive the redirect, so we use
+  // the URL as the carrier.
+  redirect(`/admin/posts?created=${encodeURIComponent(post.slug)}`);
 }
 
 export async function updatePostAction(

@@ -1,5 +1,17 @@
 "use client";
 
+import { useRef, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { deletePostAction, togglePublishAction } from "@/modules/posts/posts.actions";
 
@@ -10,13 +22,10 @@ type Props = {
 };
 
 export function PostRowActions({ id, title, published }: Props) {
-  // Confirm in the browser before submitting — avoids a Dialog dep for now.
-  // The form's onSubmit returns false to prevent submission when the user cancels.
-  function confirmDelete(e: React.FormEvent<HTMLFormElement>) {
-    if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) {
-      e.preventDefault();
-    }
-  }
+  const [open, setOpen] = useState(false);
+  // The AlertDialog Action is just a button — it doesn't submit our hidden form
+  // automatically. We hold the form ref and call requestSubmit() on confirm.
+  const formRef = useRef<HTMLFormElement>(null);
 
   return (
     <div className="flex justify-end gap-2">
@@ -26,11 +35,38 @@ export function PostRowActions({ id, title, published }: Props) {
           {published ? "Unpublish" : "Publish"}
         </Button>
       </form>
-      <form action={deletePostAction} onSubmit={confirmDelete}>
+
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogTrigger asChild>
+          <Button type="button" variant="ghost" size="sm" className="text-destructive">
+            Delete
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this post?</AlertDialogTitle>
+            <AlertDialogDescription>
+              "{title}" will be permanently removed. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-primary-foreground hover:bg-destructive/90"
+              onClick={() => {
+                setOpen(false);
+                formRef.current?.requestSubmit();
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Hidden form — AlertDialogAction calls requestSubmit() on the ref */}
+      <form ref={formRef} action={deletePostAction} className="hidden">
         <input type="hidden" name="id" value={id} />
-        <Button type="submit" variant="ghost" size="sm" className="text-destructive">
-          Delete
-        </Button>
       </form>
     </div>
   );

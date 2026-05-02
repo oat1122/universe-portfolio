@@ -37,9 +37,12 @@
 | Package                    | Purpose                                             |
 | -------------------------- | --------------------------------------------------- |
 | `shadcn/ui`                | Component system — **copy-paste, not a dependency** |
-| `lucide-react`             | Icon set used by shadcn                             |
-| `class-variance-authority` | Variant management (shadcn dependency)              |
-| `clsx` + `tailwind-merge`  | className utilities                                 |
+| `lucide-react`                 | Icon set used by shadcn                         |
+| `class-variance-authority`     | Variant management (shadcn dependency)          |
+| `clsx` + `tailwind-merge`      | className utilities                             |
+| `sonner`                       | Toast notifications (shadcn-recommended)        |
+| `@radix-ui/react-dialog`       | Generic modal dialog (shadcn Dialog peer)       |
+| `@radix-ui/react-alert-dialog` | Yes/no confirmation (shadcn AlertDialog peer)   |
 
 **Setup:** `npx shadcn@latest init` (when first UI work begins) — add components on demand with `npx shadcn@latest add <component>`. Use the v4-compatible registry — no Tailwind v3 fallback needed.
 

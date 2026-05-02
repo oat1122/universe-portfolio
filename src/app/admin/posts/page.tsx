@@ -4,14 +4,23 @@ import { EyebrowLabel } from "@/components/ui/eyebrow-label";
 import { requireAdmin } from "@/modules/auth";
 import { postsService } from "@/modules/posts";
 import { formatDate } from "@/shared/utils/date";
+import { CreatedToast } from "./_components/created-toast";
 import { PostRowActions } from "./post-row-actions";
 
-export default async function AdminPostsPage() {
+type PageProps = {
+  searchParams: Promise<{ created?: string }>;
+};
+
+export default async function AdminPostsPage({ searchParams }: PageProps) {
   const user = await requireAdmin();
-  const posts = await postsService.listAllForAuthor(user.profile.id);
+  const [posts, sp] = await Promise.all([
+    postsService.listAllForAuthor(user.profile.id),
+    searchParams,
+  ]);
 
   return (
     <section>
+      {sp.created && <CreatedToast slug={sp.created} />}
       <header className="mb-6 flex items-end justify-between gap-4">
         <div>
           <EyebrowLabel className="mb-2">Content</EyebrowLabel>

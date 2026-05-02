@@ -3,6 +3,7 @@
 import { type Editor, EditorContent, useEditor } from "@tiptap/react";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 // Direct-import Server Action per module-pattern.md "Server Action import exception".
 import { uploadBlogImageAction } from "@/modules/posts/posts.actions";
@@ -269,11 +270,12 @@ function ImageUploadButton({ editor }: { editor: Editor }) {
       formData.append("file", file);
       const result = await uploadBlogImageAction(formData);
       if (!result.ok) {
-        window.alert(`Upload failed: ${result.message}`);
+        toast.error("Image upload failed", { description: result.message });
         return;
       }
       // Tiptap Image extension persists `alt` on the node — accessible + indexed for SEO.
       editor.chain().focus().setImage({ src: result.url, alt: result.suggestedAlt }).run();
+      toast.success("Image inserted");
     } finally {
       // Reset so picking the same file again still triggers onChange.
       if (inputRef.current) inputRef.current.value = "";

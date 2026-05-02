@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/sonner";
 // Direct-import Server Action per module-pattern.md "Server Action import exception".
 import { deleteBlogImageAction, uploadBlogImageAction } from "@/modules/posts/posts.actions";
 
@@ -16,7 +17,6 @@ export function CoverImageUploader({ initialUrl, initialAlt }: CoverImageUploade
   // The form submits these two fields — we drive them imperatively after upload.
   const [url, setUrl] = useState<string>(initialUrl ?? "");
   const [alt, setAlt] = useState<string>(initialAlt ?? "");
-  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -27,7 +27,6 @@ export function CoverImageUploader({ initialUrl, initialAlt }: CoverImageUploade
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setError(null);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -39,7 +38,7 @@ export function CoverImageUploader({ initialUrl, initialAlt }: CoverImageUploade
       if (fileInputRef.current) fileInputRef.current.value = "";
 
       if (!result.ok) {
-        setError(result.message);
+        toast.error("Image upload failed", { description: result.message });
         return;
       }
 
@@ -51,17 +50,18 @@ export function CoverImageUploader({ initialUrl, initialAlt }: CoverImageUploade
       if (previousUrl) {
         await deleteBlogImageAction(previousUrl);
       }
+      toast.success(previousUrl ? "Cover image replaced" : "Cover image uploaded");
     });
   }
 
   function handleRemove() {
     if (!url) return;
-    setError(null);
     const toDelete = url;
     startTransition(async () => {
       setUrl("");
       setAlt("");
       await deleteBlogImageAction(toDelete);
+      toast.success("Cover image removed");
     });
   }
 
@@ -123,12 +123,6 @@ export function CoverImageUploader({ initialUrl, initialAlt }: CoverImageUploade
           onChange={handleFileChange}
         />
       </div>
-
-      {error && (
-        <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      )}
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="coverImageAlt">

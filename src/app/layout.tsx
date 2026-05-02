@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bai_Jamjuree, JetBrains_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import { SITE_NAME } from "@/config/constants";
 import { env } from "@/config/env";
 import "./globals.css";
@@ -69,7 +70,10 @@ export default function RootLayout({
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: tiny static script for theme init (no user input) */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="flex min-h-full flex-col bg-background text-foreground">{children}</body>
+      <body className="flex min-h-full flex-col bg-background text-foreground">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }
