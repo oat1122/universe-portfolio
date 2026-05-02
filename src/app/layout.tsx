@@ -36,8 +36,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // suppressHydrationWarning on <html>: themeInitScript mutates data-theme before
+  // React hydrates, so the attribute diff is expected. Scope is html-level only —
+  // children are still checked strictly.
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
       <head>
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: tiny static script for theme init (no user input) */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
