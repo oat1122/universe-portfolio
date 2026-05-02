@@ -6,4 +6,5 @@
 //
 // Forgetting to add the line silently produces empty migrations.
 
-export {};
+export * from "@/modules/posts/posts.schema";
+export * from "@/modules/profiles/profiles.schema";
