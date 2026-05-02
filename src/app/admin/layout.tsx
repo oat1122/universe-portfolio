@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AccentStripe } from "@/components/ui/accent-stripe";
 import { Button } from "@/components/ui/button";
 import { logoutAction, requireAdmin } from "@/modules/auth";
+
+export const metadata: Metadata = {
+  title: { default: "Admin", template: "%s — Admin" },
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await requireAdmin();

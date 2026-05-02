@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SITE_NAME } from "@/config/constants";
+import { env } from "@/config/env";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +15,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Universe Portfolio",
-  description: "Personal portfolio + blog",
+  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
+  title: {
+    default: SITE_NAME,
+    template: `%s — ${SITE_NAME}`,
+  },
+  description: "Personal portfolio + blog with a 3D universe scene.",
+  openGraph: {
+    siteName: SITE_NAME,
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 // Runs before React hydrates: sets data-theme from localStorage so the page
