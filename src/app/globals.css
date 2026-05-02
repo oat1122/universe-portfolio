@@ -32,6 +32,11 @@
   --color-border: var(--border-color);
   --color-ring: var(--accent-primary);
 
+  /* Status — used as base color for `bg-destructive/10`, `text-destructive`,
+   * `border-destructive/30` etc. (Tailwind v4 generates the alpha mix automatically) */
+  --color-destructive: var(--status-destructive);
+  --color-warning: var(--status-warning);
+
   /* Fonts (kept from create-next-app) */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -51,6 +56,8 @@
     --accent-secondary: #fbe122;
     --accent-secondary-fg: #000000;
     --border-color: #e5e5e5;
+    --status-destructive: #dc2626;
+    --status-warning: #d97706;
     --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
   }
 
@@ -67,6 +74,8 @@
     --accent-secondary: #ffd93d;
     --accent-secondary-fg: #000000;
     --border-color: #2e2e2e;
+    --status-destructive: #f87171;
+    --status-warning: #fbbf24;
     --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
   }
 
@@ -85,6 +94,8 @@
       --accent-secondary: #ffd93d;
       --accent-secondary-fg: #000000;
       --border-color: #2e2e2e;
+      --status-destructive: #f87171;
+      --status-warning: #fbbf24;
       --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
     }
   }

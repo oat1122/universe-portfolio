@@ -26,6 +26,8 @@ export const lightTheme = {
   accent: "#FBE122",
   accentForeground: "#000000",
   border: "#E5E5E5",
+  destructive: "#DC2626",
+  warning: "#D97706",
 } as const;
 
 export const darkTheme = {
@@ -40,6 +42,8 @@ export const darkTheme = {
   accent: "#FFD93D",
   accentForeground: "#000000",
   border: "#2E2E2E",
+  destructive: "#F87171",
+  warning: "#FBBF24",
 } as const;
 
 export type ThemeMode = "light" | "dark";
