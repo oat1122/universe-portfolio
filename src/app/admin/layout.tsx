@@ -31,6 +31,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               >
                 Dashboard
               </Link>
+              <Link
+                href="/admin/posts"
+                className="transition-colors duration-150 hover:text-foreground"
+              >
+                Posts
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">

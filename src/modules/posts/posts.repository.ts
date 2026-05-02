@@ -2,7 +2,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/infrastructure/db/client";
 import { profiles } from "@/modules/profiles/profiles.schema";
 import { posts } from "./posts.schema";
-import type { Post, PostWithAuthor } from "./posts.types";
+import type { NewPost, Post, PostWithAuthor } from "./posts.types";
 
 // Author projection shared by every joined query — keeps it in sync with PostWithAuthor.
 const authorProjection = {
@@ -13,6 +13,11 @@ const authorProjection = {
 } as const;
 
 export const postsRepository = {
+  async findById(id: string): Promise<Post | null> {
+    const [row] = await db.select().from(posts).where(eq(posts.id, id));
+    return row ?? null;
+  },
+
   async findBySlug(slug: string): Promise<Post | null> {
     const [row] = await db.select().from(posts).where(eq(posts.slug, slug));
     return row ?? null;
@@ -50,6 +55,34 @@ export const postsRepository = {
     return rows
       .filter((r): r is { post: Post; author: NonNullable<typeof r.author> } => r.author !== null)
       .map((r) => ({ ...r.post, author: r.author }));
+  },
+
+  // Admin list — drafts + published, scoped to one author.
+  async findAllForAuthor(authorId: string): Promise<Post[]> {
+    return db
+      .select()
+      .from(posts)
+      .where(eq(posts.authorId, authorId))
+      .orderBy(desc(posts.createdAt));
+  },
+
+  async create(data: NewPost): Promise<Post> {
+    const [row] = await db.insert(posts).values(data).returning();
+    if (!row) throw new Error("Insert returned no row");
+    return row;
+  },
+
+  async update(id: string, data: Partial<NewPost>): Promise<Post | null> {
+    const [row] = await db
+      .update(posts)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(posts.id, id))
+      .returning();
+    return row ?? null;
+  },
+
+  async delete(id: string): Promise<void> {
+    await db.delete(posts).where(eq(posts.id, id));
   },
 
   async incrementViews(id: string): Promise<void> {
