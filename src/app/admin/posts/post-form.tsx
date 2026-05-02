@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Textarea } from "@/components/ui/textarea";
 import type { Post } from "@/modules/posts";
 // Direct-import per module-pattern.md "Server Action import exception" —
@@ -79,15 +80,11 @@ export function PostForm({ post }: PostFormProps) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="content">Content</Label>
-        <Textarea
-          id="content"
+        <Label>Content</Label>
+        <RichTextEditor
           name="content"
-          required
-          rows={14}
-          className="font-mono"
-          placeholder="Markdown body — MDX rendering arrives with the content module."
-          defaultValue={post?.content}
+          initialValue={post?.content}
+          placeholder="Start writing your post…"
         />
         {fieldError("content") && (
           <p className="text-xs text-destructive">{fieldError("content")}</p>

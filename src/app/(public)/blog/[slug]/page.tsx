@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { RichTextRenderer } from "@/components/blog/rich-text-renderer";
 import { EyebrowLabel } from "@/components/ui/eyebrow-label";
 import { SITE_NAME } from "@/config/constants";
 import { env } from "@/config/env";
 import { postsService } from "@/modules/posts";
 import { NotFoundError } from "@/shared/errors";
+import { extractTiptapText, truncateForDescription } from "@/shared/lib/tiptap";
 import { formatDate } from "@/shared/utils/date";
 
 type PageParams = { params: Promise<{ slug: string }> };
@@ -15,14 +17,18 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   try {
     const post = await postsService.getPostMetaBySlug(slug);
     const url = `/blog/${post.slug}`;
+    // Description priority: explicit excerpt > first chunk of body text > title fallback.
+    // Body text comes from Tiptap doc so SEO + JSON-LD stay aligned with rendered HTML.
+    const description = post.excerpt ?? truncateForDescription(extractTiptapText(post.content));
+
     return {
       title: post.title,
-      description: post.excerpt ?? `${post.title} — by ${post.author.displayName}`,
+      description,
       authors: [{ name: post.author.displayName }],
       alternates: { canonical: url },
       openGraph: {
         title: post.title,
-        description: post.excerpt ?? undefined,
+        description,
         type: "article",
         url,
         publishedTime: post.publishedAt?.toISOString(),
@@ -33,7 +39,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       twitter: {
         card: "summary_large_image",
         title: post.title,
-        description: post.excerpt ?? undefined,
+        description,
         images: post.coverImage ? [post.coverImage] : undefined,
       },
     };
@@ -54,11 +60,16 @@ export default async function BlogPostPage({ params }: PageParams) {
     throw e;
   }
 
+  // Plain-text body — used by JSON-LD `articleBody` to keep structured data
+  // in sync with the rendered HTML (no markup, single-spaced).
+  const bodyText = extractTiptapText(post.content);
+
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
-    description: post.excerpt ?? undefined,
+    description: post.excerpt ?? truncateForDescription(bodyText),
+    articleBody: bodyText,
     image: post.coverImage ? [post.coverImage] : undefined,
     datePublished: post.publishedAt?.toISOString(),
     dateModified: post.updatedAt.toISOString(),
@@ -129,10 +140,7 @@ export default async function BlogPostPage({ params }: PageParams) {
           </div>
         </header>
 
-        {/* Plain-text rendering for now — MDX rendering arrives with the content module. */}
-        <div className="whitespace-pre-wrap text-base leading-relaxed text-foreground">
-          {post.content}
-        </div>
+        <RichTextRenderer doc={post.content} />
       </article>
     </>
   );

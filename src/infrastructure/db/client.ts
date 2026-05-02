@@ -1,5 +1,8 @@
-import "server-only";
-
+// Note: no `import "server-only"` here. postgres-js depends on `net`/`tls`/`fs`
+// which already break the browser bundle, so the guard is redundant. Keeping it
+// would also break Node CLI scripts (scripts/seed.ts) that legitimately need a
+// DB connection without a React tree. The auth.service / supabase/server.ts
+// guards still cover the routes where leakage would matter.
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres, { type Sql } from "postgres";
 import { env } from "@/config/env";

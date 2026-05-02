@@ -17,6 +17,23 @@ import { env } from "@/config/env";
 import { db } from "@/infrastructure/db/client";
 import { posts } from "@/modules/posts/posts.schema";
 import { profiles } from "@/modules/profiles/profiles.schema";
+import type { TiptapDoc } from "@/shared/lib/tiptap";
+
+// Sample post body in Tiptap doc format. Two paragraphs — verifies that the
+// renderer's block-level whitespace is correct.
+const SAMPLE_CONTENT: TiptapDoc = {
+  type: "doc",
+  content: [
+    {
+      type: "paragraph",
+      content: [{ type: "text", text: "This is the first post on the Universe Portfolio." }],
+    },
+    {
+      type: "paragraph",
+      content: [{ type: "text", text: "Powered by Next.js 16, Drizzle ORM, and Supabase." }],
+    },
+  ],
+};
 
 const SEED_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@demo.local";
 const SEED_PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? "DevPassword123!";
@@ -90,8 +107,7 @@ async function main() {
     .values({
       title: "Hello, Universe",
       slug: "hello-universe",
-      content:
-        "This is the first post on the Universe Portfolio.\n\nPowered by Next.js 16, Drizzle ORM, and Supabase.",
+      content: SAMPLE_CONTENT,
       excerpt: "A first post to verify the full read pipeline.",
       published: true,
       publishedAt: new Date(),

@@ -82,15 +82,25 @@ npm install -D @types/three
 
 ---
 
-## 5. Content / MDX
+## 5. Content / Editor + MDX
 
-| Package                    | Purpose                                             |
-| -------------------------- | --------------------------------------------------- |
-| `next-mdx-remote`          | Render MDX from string (preferred over `@next/mdx`) |
-| `shiki`                    | Syntax highlighting (modern replacement for Prism)  |
-| `remark-gfm`               | GitHub Flavored Markdown                            |
-| `rehype-slug`              | Auto-generate heading IDs                           |
-| `rehype-autolink-headings` | Anchor links on headings                            |
+| Package                              | Purpose                                                       |
+| ------------------------------------ | ------------------------------------------------------------- |
+| `@tiptap/react`                      | Rich-text editor (admin form) — React bindings                |
+| `@tiptap/pm`                         | ProseMirror peer required by Tiptap                           |
+| `@tiptap/starter-kit`                | Bundled extensions (heading, list, bold, italic, blockquote)  |
+| `@tiptap/extension-link`             | Link mark in editor                                           |
+| `@tiptap/extension-placeholder`      | Empty-doc placeholder UX                                      |
+| `@tiptap/extension-image`            | Image node (Supabase Storage URL)                             |
+| `@tiptap/extension-code-block-lowlight` | Syntax-highlighted code blocks                             |
+| `lowlight`                           | highlight.js engine — Tiptap code-block-lowlight peer         |
+| `@tiptap/html`                       | Server-side `generateHTML(json, extensions)` for blog render  |
+| `next-mdx-remote`                    | (Optional later) MDX from string for advanced post components |
+| `shiki`                              | (Optional later) Syntax highlight for MDX                     |
+| `remark-gfm`                         | (With MDX) GitHub Flavored Markdown                           |
+| `rehype-slug` + `rehype-autolink-headings` | (With MDX) auto heading anchors                         |
+
+**Storage format:** Tiptap JSON (`{ type: "doc", content: [...] }`) is stored in `posts.content` (`jsonb`). Server renders to HTML via `@tiptap/html`'s `generateHTML` using shared extensions config in `src/shared/lib/tiptap.ts`. SEO description / structured data extract plain text via `generateText`.
 
 **Why `next-mdx-remote` not `@next/mdx`:** can load MDX content from database (admin can write blog posts) — `@next/mdx` only loads from filesystem.
 

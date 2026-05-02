@@ -69,6 +69,7 @@ export const postsService = {
     return postsRepository.create({
       title: input.title,
       slug,
+      // input.content is already a TiptapDoc (transformed by createPostDto)
       content: input.content,
       excerpt: input.excerpt ?? null,
       coverImage: input.coverImage ?? null,

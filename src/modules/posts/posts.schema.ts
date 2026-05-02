@@ -3,6 +3,7 @@ import {
   boolean,
   index,
   integer,
+  jsonb,
   pgPolicy,
   pgTable,
   text,
@@ -10,6 +11,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { profiles } from "@/modules/profiles/profiles.schema";
+import type { TiptapDoc } from "@/shared/lib/tiptap";
 
 // Cross-module schema import is permitted: schema files are inert data definitions,
 // not service code. The "no cross-module internal imports" rule applies to service /
@@ -20,7 +22,7 @@ export const posts = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     title: text("title").notNull(),
     slug: text("slug").notNull().unique(),
-    content: text("content").notNull(),
+    content: jsonb("content").$type<TiptapDoc>().notNull(),
     excerpt: text("excerpt"),
     coverImage: text("cover_image"),
     published: boolean("published").default(false).notNull(),
