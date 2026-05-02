@@ -13,19 +13,22 @@
 - **Package manager:** **npm** (already initialized, do NOT switch to pnpm/yarn)
 - **Deployment target:** Vercel (frontend + API) + Supabase Cloud (database)
 - **Owner skill level:** Beginner — prefer well-documented, mainstream choices over cutting-edge
+- **Last reconciled:** 2026-05-02 — actual installed stack: Next 16, React 19, Tailwind v4, Biome (single-tool replaces ESLint/Prettier)
 
 ---
 
 ## 1. Frontend Core
 
-| Package       | Version | Purpose                                                   |
-| ------------- | ------- | --------------------------------------------------------- |
-| `next`        | `^15`   | Framework (App Router, Server Components, Server Actions) |
-| `react`       | `^19`   | UI library                                                |
-| `typescript`  | `^5`    | Type safety — use `strict: true`                          |
-| `tailwindcss` | `^3.4`  | Styling — **pin to v3, NOT v4** (shadcn compatibility)    |
+| Package                       | Version  | Purpose                                                   |
+| ----------------------------- | -------- | --------------------------------------------------------- |
+| `next`                        | `^16`    | Framework (App Router, Server Components, Server Actions) |
+| `react` / `react-dom`         | `^19`    | UI library (React Compiler enabled via Next config)       |
+| `typescript`                  | `^5`     | Type safety — use `strict: true`                          |
+| `tailwindcss`                 | `^4`     | Styling — v4 baseline (PostCSS plugin)                    |
+| `@tailwindcss/postcss`        | `^4`     | Tailwind v4 PostCSS adapter                               |
+| `babel-plugin-react-compiler` | `^1`     | Required while React Compiler is enabled in `next.config` |
 
-**Rationale:** Next.js App Router is the default. Tailwind v4 is too new — shadcn components need extra config. Stick with v3.4 until ecosystem catches up.
+**Rationale:** Next 16 + React 19 + Tailwind v4 reflect the actual installed baseline (reconciled 2026-05). shadcn now supports Tailwind v4 — no extra config workaround needed.
 
 ---
 
@@ -38,7 +41,7 @@
 | `class-variance-authority` | Variant management (shadcn dependency)              |
 | `clsx` + `tailwind-merge`  | className utilities                                 |
 
-**Setup:** `npx shadcn@latest init` — add components on demand with `npx shadcn@latest add <component>`
+**Setup:** `npx shadcn@latest init` (when first UI work begins) — add components on demand with `npx shadcn@latest add <component>`. Use the v4-compatible registry — no Tailwind v3 fallback needed.
 
 **Rule:** Do NOT install component libraries like MUI, Chakra, Mantine. shadcn only.
 
@@ -145,15 +148,15 @@ npm install -D drizzle-kit
 
 **Schema location:** Each module owns its schema (`modules/<feature>/<feature>.schema.ts`). Re-export all from `infrastructure/db/index.ts` so drizzle-kit can find them.
 
-**Migration commands:**
+**Migration commands** (drizzle-kit ≥ 0.30 — no `:postgres` suffix):
 
 ```bash
-npm run db:generate    # generate SQL from schema changes
-npm run db:migrate     # apply migrations
-npm run db:studio      # open Drizzle Studio GUI
+npm run db:generate    # drizzle-kit generate
+npm run db:migrate     # drizzle-kit migrate
+npm run db:studio      # drizzle-kit studio
 ```
 
-(Add these to `package.json` scripts.)
+(Already in `package.json` scripts.)
 
 ---
 
@@ -217,21 +220,25 @@ npm run db:studio      # open Drizzle Studio GUI
 
 ## 13. Dev Tools
 
-| Package                                    | Purpose                                 |
-| ------------------------------------------ | --------------------------------------- |
-| `eslint` + `eslint-config-next`            | Linting                                 |
-| `prettier` + `prettier-plugin-tailwindcss` | Formatting + auto-sort Tailwind classes |
-| `husky`                                    | Git hooks                               |
-| `lint-staged`                              | Run lint on staged files only           |
-| `vitest`                                   | Unit tests                              |
-| `@testing-library/react`                   | Component tests                         |
-| `playwright`                               | E2E tests                               |
+| Package                  | Purpose                                                    |
+| ------------------------ | ---------------------------------------------------------- |
+| `@biomejs/biome`         | Lint + format + organize-imports (single-tool replacement) |
+| `husky`                  | Git hooks                                                  |
+| `lint-staged`            | Run Biome on staged files only                             |
+| `vitest`                 | Unit tests                                                 |
+| `@testing-library/react` | Component tests                                            |
+| `playwright`             | E2E tests                                                  |
 
-**Install all dev dependencies:**
+**Install dev dependencies (when each is needed):**
 
 ```bash
-npm install -D eslint prettier prettier-plugin-tailwindcss husky lint-staged vitest @testing-library/react @testing-library/jest-dom playwright
+# already installed: @biomejs/biome
+npm install -D husky lint-staged
+# later:
+npm install -D vitest @testing-library/react @testing-library/jest-dom playwright
 ```
+
+**Why Biome (not ESLint + Prettier):** one binary, one config (`biome.json`), faster CI, native organize-imports. Trade-off: smaller plugin ecosystem — acceptable since `next-on-biome` rules cover Next/React essentials.
 
 ---
 
@@ -277,7 +284,9 @@ Maintain `.env.example` (committed) with same keys but empty values.
 | `lodash`                          | Native ES2024+ has equivalents                         |
 | `@next/mdx`                       | Use `next-mdx-remote` instead (more flexible)          |
 | `swr`                             | TanStack Query is the choice                           |
-| `tailwindcss@4`                   | Pin v3.4 — see section 1                               |
+| `tailwindcss@3`                   | v4 is the baseline (see section 1)                     |
+| `eslint`, `eslint-config-*`       | Biome is the linter — do not mix                       |
+| `prettier`, `prettier-plugin-*`   | Biome handles formatting — do not mix                  |
 
 ---
 

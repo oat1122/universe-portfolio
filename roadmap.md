@@ -21,7 +21,7 @@
 ### Frontend
 | Tool | ใช้ทำอะไร |
 |------|-----------|
-| Next.js 15 (App Router) | Framework หลัก, server components |
+| Next.js 16 (App Router) | Framework หลัก, server components |
 | TypeScript | เขียนโค้ดปลอดภัย ไม่หลุด type |
 | Tailwind CSS | เขียน CSS เร็ว |
 | shadcn/ui | UI components สวยพร้อมใช้ |

@@ -1,7 +1,7 @@
 # 🏛 Architecture — Universe Portfolio
 
 > **Pattern:** Feature-based / Modular Architecture (NestJS-style)
-> **Stack:** Next.js 15 (App Router) + Drizzle ORM + Supabase (Postgres + Auth + Storage)
+> **Stack:** Next.js 16 (App Router) + Drizzle ORM + Supabase (Postgres + Auth + Storage)
 > **ปรัชญา:** จัดโค้ดตาม **feature** ไม่ใช่ตาม layer — โฟลเดอร์ = 1 feature ที่ครบทุกชั้น
 
 ---
