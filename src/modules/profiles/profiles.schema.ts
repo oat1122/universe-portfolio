@@ -1,5 +1,16 @@
 import { sql } from "drizzle-orm";
-import { index, pgPolicy, pgSchema, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  index,
+  pgEnum,
+  pgPolicy,
+  pgSchema,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
+
+export const profileRoleEnum = pgEnum("profile_role", ["admin", "user"]);
 
 // Reference handle to Supabase's managed `auth.users` table.
 // We do NOT own this table — it's declared here only so Drizzle can type-check
@@ -22,6 +33,9 @@ export const profiles = pgTable(
     displayName: text("display_name").notNull(),
     avatarUrl: text("avatar_url"),
     bio: text("bio"),
+    // Authorization role — guards admin dashboard access. Only set via SQL by trusted users.
+    // The RLS UPDATE policy below explicitly forbids self-promotion to 'admin'.
+    role: profileRoleEnum("role").notNull().default("user"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },

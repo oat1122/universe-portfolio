@@ -148,15 +148,19 @@ npm install -D drizzle-kit
 
 **Schema location:** Each module owns its schema (`modules/<feature>/<feature>.schema.ts`). Re-export all from `infrastructure/db/index.ts` so drizzle-kit can find them.
 
-**Migration commands** (drizzle-kit ≥ 0.30 — no `:postgres` suffix):
+**Migration & data commands** (drizzle-kit ≥ 0.30 — no `:postgres` suffix):
 
 ```bash
 npm run db:generate    # drizzle-kit generate
 npm run db:migrate     # drizzle-kit migrate
+npm run db:push        # push schema without migration files (dev only)
 npm run db:studio      # drizzle-kit studio
+npm run db:seed        # tsx scripts/seed.ts — idempotent, creates admin + sample post
 ```
 
 (Already in `package.json` scripts.)
+
+**Env loading for drizzle-kit & seed:** Both load `.env` / `.env.local` / `.env.*` via `@next/env loadEnvConfig` so they share Next's env priority. No separate `dotenv` dep.
 
 ---
 
@@ -225,6 +229,7 @@ npm run db:studio      # drizzle-kit studio
 | `@biomejs/biome`         | Lint + format + organize-imports (single-tool replacement) |
 | `husky`                  | Git hooks                                                  |
 | `lint-staged`            | Run Biome on staged files only                             |
+| `tsx`                    | Run `.ts` scripts (e.g. `scripts/seed.ts`)                 |
 | `vitest`                 | Unit tests                                                 |
 | `@testing-library/react` | Component tests                                            |
 | `playwright`             | E2E tests                                                  |
@@ -310,6 +315,7 @@ Maintain `.env.example` (committed) with same keys but empty values.
 5. **`NEXT_PUBLIC_*` env vars are exposed to browser** — never put secrets there
 6. **`postgres.js` driver** has different connection options than `pg` — use Drizzle's docs for Supabase setup
 7. **Vercel function timeout** is 10s on hobby — AI streaming must use Edge Runtime or upgrade plan
+8. **Next 16 renamed `middleware.ts` → `proxy.ts`** — function name is now `proxy(request)` (was `middleware(request)`). Same `config.matcher` semantics. Helper file `infrastructure/supabase/proxy.ts` follows the same naming.
 
 ---
 

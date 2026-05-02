@@ -46,10 +46,10 @@ src/
 │   │   ├── about/page.tsx
 │   │   ├── projects/[slug]/page.tsx
 │   │   └── blog/[slug]/page.tsx
-│   ├── (admin)/
-│   │   ├── layout.tsx                ← auth guard
-│   │   ├── dashboard/page.tsx
-│   │   └── posts/[id]/edit/page.tsx
+│   ├── admin/                        ← URL prefix: /admin/* (not a route group — must be visible in URL)
+│   │   ├── layout.tsx                ← auth guard via requireAdmin()
+│   │   ├── dashboard/page.tsx        ← /admin/dashboard
+│   │   └── posts/[id]/edit/page.tsx  ← /admin/posts/[id]/edit
 │   ├── api/                          ← เรียก controller ของแต่ละ module
 │   │   ├── posts/[id]/route.ts
 │   │   ├── comments/route.ts
@@ -130,7 +130,7 @@ src/
 ├── hooks/                            ← React hooks
 ├── types/
 │   └── global.d.ts
-└── middleware.ts                     ← Next.js middleware (refresh session)
+└── proxy.ts                          ← Next 16 proxy (refresh session — was middleware.ts)
 ```
 
 ---
@@ -505,7 +505,7 @@ import { postsService } from "@/modules/posts/posts.service";
 - [ ] เพิ่ม schema ใน `infrastructure/db/index.ts`
 - [ ] รัน `npm run db:generate` → migration ออกมา
 - [ ] เพิ่ม route ใน `app/api/<feature>/route.ts`
-- [ ] เพิ่ม route ใน `app/(public)/` หรือ `(admin)/` ถ้ามี UI
+- [ ] เพิ่ม route ใน `app/(public)/` (group — URL ไม่มี prefix) หรือ `app/admin/` (folder — URL มี `/admin/` prefix)
 - [ ] เขียน test (ถ้ามี)
 
 ---

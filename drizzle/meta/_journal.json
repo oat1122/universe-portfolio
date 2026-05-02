@@ -8,6 +8,13 @@
       "when": 1777721248713,
       "tag": "0000_legal_shiva",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1777722589583,
+      "tag": "0001_flaky_jack_power",
+      "breakpoints": true
     }
   ]
 }
