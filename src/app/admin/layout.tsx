@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { AccentStripe } from "@/components/ui/accent-stripe";
+import { Button } from "@/components/ui/button";
 import { logoutAction, requireAdmin } from "@/modules/auth";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -13,7 +15,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               href="/admin/dashboard"
               className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-foreground"
             >
-              <span className="h-5 w-1 bg-primary" />
+              <span aria-hidden className="h-5 w-1 bg-primary" />
               Admin
             </Link>
             <nav className="flex gap-4 text-sm text-muted-foreground">
@@ -28,21 +30,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <div className="flex items-center gap-3 text-sm">
             <span className="text-muted-foreground">{user.profile.displayName}</span>
             <form action={logoutAction}>
-              <button
-                type="submit"
-                className="rounded-md border border-border bg-background px-3 py-1.5 text-foreground transition-colors duration-150 hover:bg-surface-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
-              >
+              <Button type="submit" variant="outline" size="sm">
                 Sign out
-              </button>
+              </Button>
             </form>
           </div>
         </div>
         {/* Trident accent strip — sub-header brand mark */}
-        <div className="flex h-1 gap-1 px-6 pb-1">
-          <span className="h-full w-8 bg-primary" />
-          <span className="h-full w-8 bg-foreground" />
-          <span className="h-full w-8 bg-accent" />
-        </div>
+        <AccentStripe variant="trident" className="mx-6 pb-1" />
       </header>
       <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
     </div>

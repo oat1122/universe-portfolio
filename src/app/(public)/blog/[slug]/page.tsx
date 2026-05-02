@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { EyebrowLabel } from "@/components/ui/eyebrow-label";
 import { postsService } from "@/modules/posts";
 import { NotFoundError } from "@/shared/errors";
 import { formatDate } from "@/shared/utils/date";
@@ -26,13 +27,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       )}
 
       <header className="mb-8 border-b border-border pb-6">
-        {/* MU eyebrow — red leading bar */}
-        <div className="mb-3 flex items-center gap-3">
-          <span className="h-5 w-1 bg-primary" />
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Article
-          </span>
-        </div>
+        <EyebrowLabel className="mb-3">Article</EyebrowLabel>
 
         <h1 className="mb-3 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
           {post.title}
